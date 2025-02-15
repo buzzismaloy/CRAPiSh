@@ -19,6 +19,7 @@ char* builtin_str[] = {
 	"exit"
 };
 
+//array of function pointers
 int (*builtin_func[]) (char**) = {
 	&crapish_cd,
 	&crapish_help,
@@ -60,8 +61,6 @@ int crapish_exit(char** args) {
 	return 0;
 }
 
-
-
 char* crapish_read_line() {
 	int buffsize = CRAPISH_RL_BUFFSIZE;
 	int position = 0;
@@ -89,7 +88,7 @@ char* crapish_read_line() {
 			buffsize += CRAPISH_RL_BUFFSIZE;
 			buffer = (char*)realloc(buffer, buffsize);
 			if (!buffer) {
-				frprintf(stderr, "CRAPiSh: memory reallocation error!\n");
+				fprintf(stderr, "CRAPiSh: memory reallocation error!\n");
 				exit(EXIT_FAILURE);
 			}
 		}
@@ -154,7 +153,17 @@ int crapish_launch(char** args) {
 }
 
 int crapish_execute(char** args) {
+	if (args[0] == NULL) {
+		return 1; //means empty command entered
+	}
 
+	for (int i = 0; i < crapish_num_builtins(); ++i) {
+		if (strcmp(args[0], builtin_str[i]) == 0) {
+			return (*builtin_func[i])(args);
+		}
+	}
+
+	return crapish_launch(args);
 }
 
 void crapish_loop(void) {
