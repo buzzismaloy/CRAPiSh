@@ -19,6 +19,49 @@ char* builtin_str[] = {
 	"exit"
 };
 
+int (*builtin_func[]) (char**) = {
+	&crapish_cd,
+	&crapish_help,
+	&crapish_exit
+};
+
+//it returns amount of builtin functions
+int crapish_num_builtins() {
+	return sizeof(builtin_str) / sizeof(char*);
+}
+
+int crapish_cd(char** args) {
+	if (args[1] == NULL) {
+		fprintf(stderr, "CRAPiSh: expected argument to \"cd\"\n");
+	}
+	else {
+		if (chdir(args[1]) != 0) {
+			perror("CRAPiSh");
+		}
+	}
+
+	return 1;
+}
+
+int crapish_help(char** args) {
+	printf("Command Runner And Process interactive Shell\n");
+	printf("Type program names and arguments, and press enter\n");
+	printf("The following are built in:\n");
+
+	for (int i = 0; i < crapish_num_builtins(); ++i) {
+		printf("	%s\n", builtin_str[i]);
+	}
+
+	printf("Use man command for more information on other programs\n");
+	return 1;
+}
+
+int crapish_exit(char** args) {
+	return 0;
+}
+
+
+
 char* crapish_read_line() {
 	int buffsize = CRAPISH_RL_BUFFSIZE;
 	int position = 0;
